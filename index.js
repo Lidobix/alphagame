@@ -1,7 +1,6 @@
-const INPUT_QTY = 14;
+const INPUT_QTY = 5;
 let selectedIndex = 0;
 let letters = [];
-console.log('coucou JS');
 
 window.addEventListener('DOMContentLoaded', function () {
   createGameBoard();
@@ -144,8 +143,7 @@ const updateDataLetters = () => {
       defineNextInput();
       updateInputsStatus();
     } else if (letter.isValid && letters.length === 1) {
-      console.log('GAGNE!!!');
-      alert("c'est gagné!!!!!!!!!");
+      winningModal();
     }
   });
 };
@@ -202,6 +200,12 @@ const createInput = (index) => {
   inputLetter.classList.add('letterContainer', 'letterInput');
 
   resContainer.appendChild(inputLetter);
+};
+
+const winningModal = () => {
+  const modal = document.getElementById('winModal');
+  modal.classList.remove('notVisible');
+  modal.classList.add('show');
 };
 
 const alphabet = [
