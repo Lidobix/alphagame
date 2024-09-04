@@ -1,0 +1,87 @@
+html {
+  font-size: 10px;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #7dcca1;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+h1 {
+  text-align: center;
+  font-size: 4rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+.alphaContainer {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+#propContainer {
+  display: none;
+}
+
+.letterFixed {
+  border-style: solid;
+  border-color: #2e36c4;
+  background-color: #55a4cc;
+}
+
+.letterContainer {
+  padding: 2rem;
+  font-size: 4rem;
+  margin: 1rem;
+  width: 5rem;
+  height: 5rem;
+  display: flex;
+  text-transform: uppercase;
+  align-items: center;
+  justify-content: center;
+  border-width: 0.3rem;
+  border-radius: 2.5rem;
+  -webkit-border-radius: 2.5rem;
+  -moz-border-radius: 2.5rem;
+  -ms-border-radius: 2.5rem;
+  -o-border-radius: 2.5rem;
+}
+
+.letterInput {
+  border-style: dashed;
+  background-color: white;
+}
+
+.selected {
+  border-style: solid;
+  border-color: black;
+  background-color: #fffc31;
+}
+
+.unselected {
+  border-color: black;
+}
+
+.valid {
+  background-color: greenyellow;
+  border-style: solid;
+  border-color: yellowgreen;
+}
+
+.notValid {
+  background-color: #e13700;
+  border-style: solid;
+  border-color: #ff1d15;
+}
+
+.notValidSelected {
+  background-color: #e13700;
+  border-color: #fffc31;
+}
