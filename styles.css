@@ -133,11 +133,12 @@ h2 {
   -moz-border-radius: 0.5rem;
   -ms-border-radius: 0.5rem;
   -o-border-radius: 0.5rem;
-  background-image: url(./assets/kai.jpg);
   background-repeat: no-repeat;
   background-size: cover;
 }
 
 p {
   margin: 0;
+  -webkit-text-stroke-width: 0.04rem;
+  -webkit-text-stroke-color: black;
 }

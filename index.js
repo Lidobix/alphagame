@@ -1,6 +1,7 @@
 const INPUT_QTY = 5;
-let selectedIndex = 0;
-let letters = [];
+let selectedIndex;
+let letters;
+let endGame;
 
 window.addEventListener('DOMContentLoaded', function () {
   createGameBoard();
@@ -8,6 +9,9 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 const createGameBoard = () => {
+  selectedIndex = 0;
+  letters = [];
+  endGame = false;
   letters = determineMissingLetters();
   const indexes = letters.map((letter) => {
     return letter.index;
@@ -91,33 +95,45 @@ const checkKeyboard = (code) => {
 
 const addKeyboardEvents = () => {
   let keyDown = false;
+
   this.document.addEventListener('keydown', (e) => {
-    console.log(e.code);
+    console.log(e.key);
     if (!keyDown) {
       if (e.key === 'Tab') {
         return;
       }
+
       if (e.key === 'Backspace') {
         keyDown = true;
         letters[selectedIndex].currentValue = '';
+        updateInputsStatus();
       }
-      console.log('key: ', e.key);
-      console.log('code: ', e.code);
+
       if (checkKeyboard(e.code) === `Key${e.key.toUpperCase()}`) {
         keyDown = true;
         letters[selectedIndex].currentValue = e.key;
+        updateInputsStatus();
       }
 
       if (e.key === 'ArrowRight' && selectedIndex < letters.length - 1) {
         letters[selectedIndex].isSelected = false;
         selectedIndex++;
         letters[selectedIndex].isSelected = true;
+        updateInputsStatus();
       }
 
       if (e.key === 'ArrowLeft' && selectedIndex > 0) {
         letters[selectedIndex].isSelected = false;
         selectedIndex--;
         letters[selectedIndex].isSelected = true;
+        updateInputsStatus();
+      }
+
+      if (e.key === ' ' && endGame) {
+        const modal = document.getElementById('winModal');
+        modal.classList.add('notVisible');
+        modal.classList.remove('show');
+        createGameBoard();
       }
 
       keyDown = true;
@@ -126,8 +142,6 @@ const addKeyboardEvents = () => {
           keyDown = false;
         }
       }, 75);
-
-      updateInputsStatus();
     }
   });
 
@@ -144,6 +158,7 @@ const updateDataLetters = () => {
       updateInputsStatus();
     } else if (letter.isValid && letters.length === 1) {
       winningModal();
+      endGame = true;
     }
   });
 };
@@ -159,10 +174,10 @@ const determineMissingLetters = () => {
   const selectedLetters = [];
 
   for (let i = 0; i < INPUT_QTY; i++) {
-    let selectedLetter = getRandomInt();
+    let selectedLetter = chooseLetter();
 
     while (selectedLetters.includes(selectedLetter)) {
-      selectedLetter = getRandomInt();
+      selectedLetter = chooseLetter();
     }
     selectedLetters.push(selectedLetter);
 
@@ -178,9 +193,9 @@ const determineMissingLetters = () => {
   return letters.sort((a, b) => a.index - b.index);
 };
 
-const getRandomInt = () => {
-  const minCeiled = Math.ceil(0);
-  const maxFloored = Math.floor(26);
+const getRandomInt = (min, max) => {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
 };
 
@@ -203,9 +218,26 @@ const createInput = (index) => {
 };
 
 const winningModal = () => {
+  const ninja = getNinja();
+
+  const line1 = document.getElementById('line1');
+  const line2 = document.getElementById('line2');
+  line1.style.color = ninja.color1;
+  line2.style.color = ninja.color2;
+
+  const ninjaImage = `url(./assets/${ninja.name}.png)`;
   const modal = document.getElementById('winModal');
+  modal.style.backgroundImage = ninjaImage;
   modal.classList.remove('notVisible');
   modal.classList.add('show');
+};
+
+const chooseLetter = () => {
+  return getRandomInt(0, alphabet.length);
+};
+
+const getNinja = () => {
+  return ninjas[getRandomInt(0, ninjas.length)];
 };
 
 const alphabet = [
@@ -235,4 +267,12 @@ const alphabet = [
   'x',
   'y',
   'z',
+];
+
+const ninjas = [
+  { name: 'all', color1: 'red', color2: 'red' },
+  { name: 'cole', color1: 'white', color2: 'white' },
+  { name: 'kai', color1: 'white', color2: 'white' },
+  { name: 'lloyd', color1: 'white', color2: 'white' },
+  { name: 'zane', color1: 'white', color2: 'white' },
 ];
