@@ -95,6 +95,7 @@ h2 {
 .notValidSelected {
   background-color: #e13700;
   border-color: #fffc31;
+  border-style: solid;
 }
 
 .show {

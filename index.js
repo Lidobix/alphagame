@@ -22,111 +22,62 @@ createGameBoard = () => {
   body.appendChild(gameContainer);
 
   createLetters();
-  // updateLettersStatus();
 };
 
 updateLettersStatus = () => {
-  // for (let i = 0; i < letters.length; i++) {}
   letters.forEach((letter, index) => {
-    // console.log(letter);
     const divLetter = document.getElementById(`letter_${index}`);
     divLetter.innerText = letter.currentValue;
-    divLetter.classList.add(letter.isInput ? 'letterInput' : 'letterFixed');
 
-    // if (letter.isValid) {
-    //   input.classList.remove('selected');
-    //   input.classList.remove('unselected');
-    //   input.classList.remove('notValid');
-    //   input.classList.add('valid');
-    // } else if (!letter.isValid && letter.currentValue !== '') {
-    //   input.classList.remove('selected');
-    //   input.classList.remove('unselected');
-    //   input.classList.remove('valid');
-    //   input.classList.add('notValid');
-    // }
+    if (!letter.isInput) {
+      divLetter.classList.add('letterFixed');
+    } else if (!letter.isValid && letter.currentValue !== '') {
+      divLetter.classList.remove('selected');
+      divLetter.classList.remove('unselected');
+      divLetter.classList.remove('valid');
+      divLetter.classList.remove('notValidSelected');
+      divLetter.classList.add('notValid');
+    } else if (!letter.isValid && letter.currentValue === '') {
+      divLetter.classList.remove('selected');
+      divLetter.classList.remove('unselected');
+      divLetter.classList.remove('notValid');
+      divLetter.classList.remove('notValidSelected');
+      divLetter.classList.add('letterInput');
+    } else if (letter.isValid) {
+      divLetter.classList.remove('selected');
+      divLetter.classList.remove('unselected');
+      divLetter.classList.remove('notValid');
+      divLetter.classList.remove('notValidSelected');
+      divLetter.classList.add('valid');
+    }
+
     if (letter.isSelected) {
-      if (!letter.isValid) {
-        divLetter.classList.remove('notValid');
-        // input.classList.add('notValidSelected');
-      }
+      divLetter.classList.remove('notValidSelected');
       divLetter.classList.remove('unselected');
       divLetter.classList.add('selected');
-    } else {
+      if (!letter.isValid && letter.currentValue !== '') {
+        divLetter.classList.remove('selected');
+        divLetter.classList.remove('unselected');
+        divLetter.classList.remove('notValid');
+        divLetter.classList.add('notValidSelected');
+      }
+    } else if (!letter.isValid && letter.currentValue !== '') {
       divLetter.classList.remove('selected');
+      divLetter.classList.remove('unselected');
+      divLetter.classList.remove('notValidSelected');
+      divLetter.classList.add('notValid');
     }
   });
-
-  // updateDatas();
-};
-
-const checkKeyboard = (code) => {
-  let [prefix, letter] = code.split('Key');
-
-  switch (letter) {
-    case 'Q':
-      letter = 'A';
-      break;
-    case 'A':
-      letter = 'Q';
-      break;
-    case 'W':
-      letter = 'Z';
-      break;
-    case 'Z':
-      letter = 'W';
-      break;
-  }
-  if (prefix === 'Semicolon') {
-    letter = 'M';
-  }
-
-  return `Key${letter}`;
 };
 
 addKeyboardEvents = () => {
   let keyDown = false;
 
   document.addEventListener('keydown', (e) => {
-    // console.log(e.key);
     if (!keyDown) {
-      if (e.key === 'Tab') {
-        return;
-      }
-
-      if (e.key === 'Backspace') {
+      if (!endGame) {
         keyDown = true;
-        // letters[selectedIndex].currentValue = '';
-        // updateLettersStatus();
-        updateDatas(e.key);
-      }
-
-      if (checkKeyboard(e.code) === `Key${e.key.toUpperCase()}`) {
-        keyDown = true;
-        // letters[selectedIndex].currentValue = e.key;
-        // updateLettersStatus();
-        updateDatas(e.key);
-      }
-
-      if (
-        e.key === 'ArrowRight'
-        //  && selectedIndex < letters.length - 1
-      ) {
-        // letters[selectedIndex].isSelected = false;
-        // selectedIndex++;
-        // letters[selectedIndex].isSelected = true;
-        // updateLettersStatus();
-        updateDatas(e.key);
-      }
-
-      if (
-        e.key === 'ArrowLeft'
-        //  && selectedIndex > 0
-      ) {
-        // letters[selectedIndex].isSelected = false;
-        // selectedIndex--;
-        // letters[selectedIndex].isSelected = true;
-        // updateLettersStatus();
-        updateDatas(e.key);
+        updateDatas(e.key, e.code);
       }
 
       if (e.key === ' ' && endGame) {
@@ -150,31 +101,65 @@ addKeyboardEvents = () => {
   });
 };
 
-const updateDatas = (letterValue) => {
-  console.log('letter+' + letterValue + '+Value', selectedIndex);
-  letters[selectedIndex].currentValue =
-    letterValue === 'Backspace' ? '' : letterValue;
+const updateDatas = (key, code) => {
+  let step = 0;
 
-  // letters.forEach((letter, index) => {
-  //   if (letter.isValid && letters.length > 1) {
-  //     letters.splice(index, 1);
-  //     defineNextInput();
-  //     updateLettersStatus();
-  //   } else if (letter.isValid && letters.length === 1) {
-  //     openWinningModal();
-  //     endGame = true;
-  //   }
-  // });
+  if (key === 'Backspace') {
+    letters[selectedIndex].currentValue = '';
+  }
+
+  if (azertyTransform(code) === `Key${key.toUpperCase()}`) {
+    letters[selectedIndex].currentValue = key;
+    checkDatas();
+  }
+
+  if (key === 'ArrowRight' || key === 'ArrowLeft') {
+    step = key === 'ArrowRight' ? 1 : -1;
+
+    updateIndex(step);
+  }
 
   updateLettersStatus();
 };
 
-// const defineNextInput = () => {
-//   if (selectedIndex >= letters.length) {
-//     selectedIndex--;
-//   }
-//   letters[selectedIndex].isSelected = true;
-// };
+checkDatas = () => {
+  let step = 0;
+
+  const { targetValue, currentValue } = letters[selectedIndex];
+
+  if (targetValue === currentValue) {
+    letters[selectedIndex].isValid = true;
+    step = 1;
+  }
+
+  const victory = letters.every((letter) => {
+    return letter.isValid;
+  });
+
+  if (victory) {
+    endGame = true;
+    openWinningModal();
+  } else {
+    updateIndex(step);
+  }
+};
+
+const updateIndex = (step) => {
+  letters[selectedIndex].isSelected = false;
+  let notSelectable = true;
+
+  while (notSelectable) {
+    selectedIndex = selectedIndex + step;
+    if (selectedIndex >= letters.length) {
+      selectedIndex = 0;
+    } else if (selectedIndex < 0) {
+      selectedIndex = letters.length - 1;
+    }
+
+    notSelectable = letters[selectedIndex].isValid;
+  }
+  letters[selectedIndex].isSelected = true;
+};
 
 createInitialDatas = () => {
   const missingLetters = determineMissingLetters();
@@ -216,7 +201,6 @@ const getRandomInt = (min, max) => {
 };
 
 const createLetters = () => {
-  // console.log('vreate letters');
   const gameBoard = document.getElementById('gameBoard');
   for (let i = 0; i < letters.length; i++) {
     const newLetter = document.createElement('div');
@@ -229,28 +213,52 @@ const createLetters = () => {
   updateLettersStatus();
 };
 
-// const openWinningModal = () => {
-//   const ninja = getNinja();
+const openWinningModal = () => {
+  const ninja = getNinja();
 
-//   const line1 = document.getElementById('line1');
-//   const line2 = document.getElementById('line2');
-//   line1.style.color = ninja.color1;
-//   line2.style.color = ninja.color2;
+  const line1 = document.getElementById('line1');
+  const line2 = document.getElementById('line2');
+  line1.style.color = ninja.color1;
+  line2.style.color = ninja.color2;
 
-//   const ninjaImage = `url(./assets/${ninja.name}.png)`;
-//   const modal = document.getElementById('winModal');
-//   modal.style.backgroundImage = ninjaImage;
-//   modal.classList.remove('notVisible');
-//   modal.classList.add('show');
-// };
+  const ninjaImage = `url(./assets/${ninja.name}.png)`;
+  const modal = document.getElementById('winModal');
+  modal.style.backgroundImage = ninjaImage;
+  modal.classList.remove('notVisible');
+  modal.classList.add('show');
+};
 
 const getLetterIndex = () => {
   return getRandomInt(0, alphabet.length);
 };
 
-// const getNinja = () => {
-//   return ninjas[getRandomInt(0, ninjas.length)];
-// };
+const getNinja = () => {
+  return ninjas[getRandomInt(0, ninjas.length)];
+};
+
+const azertyTransform = (code) => {
+  let [prefix, letter] = code.split('Key');
+
+  switch (letter) {
+    case 'Q':
+      letter = 'A';
+      break;
+    case 'A':
+      letter = 'Q';
+      break;
+    case 'W':
+      letter = 'Z';
+      break;
+    case 'Z':
+      letter = 'W';
+      break;
+  }
+  if (prefix === 'Semicolon') {
+    letter = 'M';
+  }
+
+  return `Key${letter}`;
+};
 
 const alphabet = [
   'a',
@@ -281,10 +289,10 @@ const alphabet = [
   'z',
 ];
 
-// const ninjas = [
-//   { name: 'all', color1: 'red', color2: 'red' },
-//   { name: 'cole', color1: 'white', color2: 'white' },
-//   { name: 'kai', color1: 'white', color2: 'white' },
-//   { name: 'lloyd', color1: 'white', color2: 'white' },
-//   { name: 'zane', color1: 'white', color2: 'white' },
-// ];
+const ninjas = [
+  { name: 'all', color1: 'red', color2: 'red' },
+  { name: 'cole', color1: 'white', color2: 'white' },
+  { name: 'kai', color1: 'white', color2: 'white' },
+  { name: 'lloyd', color1: 'white', color2: 'white' },
+  { name: 'zane', color1: 'white', color2: 'white' },
+];
