@@ -16,45 +16,31 @@ startGame = () => {
 createGameBoard = () => {
   endGame = false;
 
-  const gameContainer = document.createElement('div');
-  gameContainer.id = 'gameBoard';
-  const body = document.querySelector('body');
-  body.appendChild(gameContainer);
-
-  createLetters();
+  const gameBoard = document.getElementById('gameBoard');
+  while (gameBoard.firstChild) {
+    gameBoard.removeChild(gameBoard.firstChild);
+  }
+  createLetters(gameBoard);
 };
 
 updateLettersStatus = () => {
+  let divLetter;
   letters.forEach((letter, index) => {
-    const divLetter = document.getElementById(`letter_${index}`);
+    divLetter = document.getElementById(`letter_${index}`);
     divLetter.innerText = letter.currentValue;
 
     if (!letter.isInput) {
       divLetter.classList.add('letterFixed');
     } else if (!letter.isValid && letter.currentValue !== '') {
-      divLetter.classList.remove('selected');
-      divLetter.classList.remove('unselected');
-      divLetter.classList.remove('valid');
-      divLetter.classList.remove('notValidSelected');
-      divLetter.classList.add('notValid');
+      changeClasses(divLetter, 'notValid');
     } else if (!letter.isValid && letter.currentValue === '') {
-      divLetter.classList.remove('selected');
-      divLetter.classList.remove('unselected');
-      divLetter.classList.remove('notValid');
-      divLetter.classList.remove('notValidSelected');
-      divLetter.classList.add('letterInput');
+      changeClasses(divLetter, 'letterInput');
     } else if (letter.isValid) {
-      divLetter.classList.remove('selected');
-      divLetter.classList.remove('unselected');
-      divLetter.classList.remove('notValid');
-      divLetter.classList.remove('notValidSelected');
-      divLetter.classList.add('valid');
+      changeClasses(divLetter, 'valid');
     }
 
     if (letter.isSelected) {
-      divLetter.classList.remove('notValidSelected');
-      divLetter.classList.remove('unselected');
-      divLetter.classList.add('selected');
+      changeClasses(divLetter, 'selected');
       if (!letter.isValid && letter.currentValue !== '') {
         divLetter.classList.remove('selected');
         divLetter.classList.remove('unselected');
@@ -62,12 +48,15 @@ updateLettersStatus = () => {
         divLetter.classList.add('notValidSelected');
       }
     } else if (!letter.isValid && letter.currentValue !== '') {
-      divLetter.classList.remove('selected');
-      divLetter.classList.remove('unselected');
-      divLetter.classList.remove('notValidSelected');
-      divLetter.classList.add('notValid');
+      changeClasses(divLetter, 'notValid');
     }
   });
+};
+
+changeClasses = (input, newClass) => {
+  const allClasses = ['selected', 'unselected', 'valid', 'notValidSelected'];
+  input.classList.remove(...allClasses);
+  input.classList.add(newClass);
 };
 
 addKeyboardEvents = () => {
@@ -78,6 +67,7 @@ addKeyboardEvents = () => {
       if (!endGame) {
         keyDown = true;
         updateDatas(e.key, e.code);
+        updateLettersStatus();
       }
 
       if (e.key === ' ' && endGame) {
@@ -115,11 +105,8 @@ const updateDatas = (key, code) => {
 
   if (key === 'ArrowRight' || key === 'ArrowLeft') {
     step = key === 'ArrowRight' ? 1 : -1;
-
     updateIndex(step);
   }
-
-  updateLettersStatus();
 };
 
 checkDatas = () => {
@@ -138,6 +125,7 @@ checkDatas = () => {
 
   if (victory) {
     endGame = true;
+    letters[selectedIndex].isSelected = false;
     openWinningModal();
   } else {
     updateIndex(step);
@@ -197,11 +185,10 @@ const determineMissingLetters = () => {
 const getRandomInt = (min, max) => {
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
-  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
 };
 
-const createLetters = () => {
-  const gameBoard = document.getElementById('gameBoard');
+const createLetters = (gameBoard) => {
   for (let i = 0; i < letters.length; i++) {
     const newLetter = document.createElement('div');
     newLetter.id = `letter_${i}`;
@@ -221,7 +208,7 @@ const openWinningModal = () => {
   line1.style.color = ninja.color1;
   line2.style.color = ninja.color2;
 
-  const ninjaImage = `url(./assets/${ninja.name}.png)`;
+  const ninjaImage = `url(./assets/${ninja.name})`;
   const modal = document.getElementById('winModal');
   modal.style.backgroundImage = ninjaImage;
   modal.classList.remove('notVisible');
@@ -290,9 +277,9 @@ const alphabet = [
 ];
 
 const ninjas = [
-  { name: 'all', color1: 'red', color2: 'red' },
-  { name: 'cole', color1: 'white', color2: 'white' },
-  { name: 'kai', color1: 'white', color2: 'white' },
-  { name: 'lloyd', color1: 'white', color2: 'white' },
-  { name: 'zane', color1: 'white', color2: 'white' },
+  { name: 'all.png', color1: 'red', color2: 'red' },
+  { name: 'cole.png', color1: 'white', color2: 'white' },
+  { name: 'kai.png', color1: 'white', color2: 'white' },
+  { name: 'lloyd.png', color1: 'white', color2: 'white' },
+  { name: 'zane.png', color1: 'white', color2: 'white' },
 ];

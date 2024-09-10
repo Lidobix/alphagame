@@ -37,10 +37,6 @@ h2 {
   flex-wrap: wrap;
 }
 
-#propContainer {
-  display: none;
-}
-
 .letterFixed {
   border-style: solid;
   border-color: #2e36c4;
