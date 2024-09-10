@@ -26,15 +26,15 @@ h2 {
   font-size: 2rem;
 }
 
-.alphaContainer {
+#gameContainer {
+  width: 100%;
+}
+
+#gameBoard {
   width: 100%;
   display: flex;
   justify-content: space-evenly;
   flex-wrap: wrap;
-}
-
-#propContainer {
-  display: none;
 }
 
 .letterFixed {
@@ -68,7 +68,7 @@ h2 {
 
 .selected {
   border-style: solid;
-  border-color: black;
+  border-color: #fffc31;
   background-color: #fffc31;
 }
 
@@ -91,6 +91,7 @@ h2 {
 .notValidSelected {
   background-color: #e13700;
   border-color: #fffc31;
+  border-style: solid;
 }
 
 .show {
