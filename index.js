@@ -1,21 +1,19 @@
-const INPUT_QTY = 5;
+const INPUT_QTY = 3;
 let selectedIndex;
 const letters = [];
 let endGame;
 
 window.addEventListener('DOMContentLoaded', function () {
+  addKeyboardEvents();
   startGame();
 });
 
 startGame = () => {
   createInitialDatas();
   createGameBoard();
-  addKeyboardEvents();
 };
 
 createGameBoard = () => {
-  endGame = false;
-
   const gameBoard = document.getElementById('gameBoard');
   while (gameBoard.firstChild) {
     gameBoard.removeChild(gameBoard.firstChild);
@@ -111,7 +109,6 @@ const updateDatas = (key, code) => {
 
 checkDatas = () => {
   let step = 0;
-
   const { targetValue, currentValue } = letters[selectedIndex];
 
   if (targetValue === currentValue) {
@@ -150,6 +147,7 @@ const updateIndex = (step) => {
 };
 
 createInitialDatas = () => {
+  endGame = false;
   const missingLetters = determineMissingLetters();
   selectedIndex = missingLetters[0];
 
