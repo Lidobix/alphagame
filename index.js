@@ -1,4 +1,4 @@
-const INPUT_QTY = 3;
+const INPUT_QTY = 5;
 let selectedIndex;
 const letters = [];
 let endGame;
